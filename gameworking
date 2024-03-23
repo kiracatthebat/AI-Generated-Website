@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+<style>
+ header {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better readability */
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+  }
+
+  nav ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  nav ul li {
+    display: inline;
+    margin-right: 20px;
+  }
+
+  nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease;
+  }
+
+  nav ul li a:hover {
+    color: #ffd700; /* Change the color on hover */
+  }
+
+  .banner {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better readability */
+    padding: 10px 20px;
+    text-align: center;
+  }
+
+  .banner a {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 18px;
+    transition: color 0.3s ease;
+  }
+
+  .banner a:hover {
+    color: #ffd700; /* Change the color on hover */
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
+  }
+  /* CSS styles for the background image */
+  body {
+    background-image: url('AI Generate Website - AI generated background.png'); /* Replace 'AI Generate Website - AI generated background.png' with the path to your background image */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>About Me</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="game.html">Game</a></li>
+        <li><a href="contactme.html">Contact Me</a></li> <!-- Added link to the gallery page -->
+      </ul>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="content">        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Game</title>
+            <style>
+                /* Add your CSS styles here */
+                canvas {
+                    display: block;
+                    margin: 0 auto;
+                    background-image: linear-gradient(to bottom, #fceabb, #f8b500, #ea4c88, #613dc1, #8a2be2);
+                }
+                #startPage {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    text-align: center;
+                    z-index: 9999;
+                    background: rgba(255, 255, 255, 0.8);
+                    padding: 20px;
+                    border-radius: 10px;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="startPage">
+                <h2>Welcome to the Platformer Game!</h2>
+                <button id="startButton">Start Game</button>
+                <button id="instructionsButton">Instructions</button>
+                <div id="instructions" style="display:none;">
+                    <p><strong>Instructions:</strong></p>
+                    <p>Use the arrow keys to move left, right, and jump.</p>
+                    <p>Avoid the moving pink snakes and reach the end!</p>
+                    <p>You have three lives.</p>
+                    <button id="closeInstructions">Close</button>
+                </div>
+            </div>
+        
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+            <script>
+                // JavaScript code for the game
+                const canvas = document.getElementById('gameCanvas');
+                const ctx = canvas.getContext('2d');
+                const startButton = document.getElementById('startButton');
+                const instructionsButton = document.getElementById('instructionsButton');
+                const instructionsDiv = document.getElementById('instructions');
+                const closeInstructionsButton = document.getElementById('closeInstructions');
+        
+                let gameStarted = false;
+                let lives = 3;
+                let score = 0;
+                let gameOver = false;
+        
+                // Player object
+                const player = {
+                    x: 50,
+                    y: canvas.height - 150,
+                    width: 50,
+                    height: 80,
+                    color: '#add8e6',
+                    speed: 5,
+                    dx: 0,
+                    dy: 0
+                };
+        
+                // Platform object
+                const platforms = [
+                    { x: 200, y: canvas.height - 50, width: 120, height: 30 },
+                    { x: 400, y: canvas.height - 100, width: 100, height: 30 },
+                    { x: 600, y: canvas.height - 200, width: 150, height: 30 },
+                    { x: 800, y: canvas.height - 150, width: 130, height: 30 },
+                ];
+        
+                // Snake object
+                const snakes = [
+                    { x: canvas.width, y: canvas.height - 100, width: 40, height: 20, color: '#ff69b4', speed: 2 },
+                    { x: canvas.width + 400, y: canvas.height - 150, width: 40, height: 20, color: '#ff69b4', speed: 3 },
+                ];
+        
+                // Control keys
+                const keys = {
+                    ArrowLeft: false,
+                    ArrowRight: false,
+                    ArrowUp: false
+                };
+        
+                // Event listeners
+                document.addEventListener('keydown', keyDownHandler);
+                document.addEventListener('keyup', keyUpHandler);
+                startButton.addEventListener('click', startGame);
+                instructionsButton.addEventListener('click', showInstructions);
+                closeInstructionsButton.addEventListener('click', closeInstructions);
+        
+                function keyDownHandler(event) {
+                    if (event.key in keys) {
+                        keys[event.key] = true;
+                    }
+                }
+        
+                function keyUpHandler(event) {
+                    if (event.key in keys) {
+                        keys[event.key] = false;
+                    }
+                }
+        
+                function startGame() {
+                    gameStarted = true;
+                    document.getElementById('startPage').style.display = 'none';
+                    requestAnimationFrame(gameLoop);
+                }
+        
+                function showInstructions() {
+                    instructionsDiv.style.display = 'block';
+                }
+        
+                function closeInstructions() {
+                    instructionsDiv.style.display = 'none';
+                }
+        
+                // Update game objects
+                function update() {
+                    if (!gameStarted || gameOver) return;
+        
+                    // Move player
+                    if (keys.ArrowLeft && player.x > 0) {
+                        player.dx = -player.speed;
+                    } else if (keys.ArrowRight && player.x + player.width < canvas.width) {
+                        player.dx = player.speed;
+                    } else {
+                        player.dx = 0;
+                    }
+        
+                    // Apply gravity
+                    if (player.y < canvas.height - player.height) {
+                        player.dy += 0.2; // Gravity
+                    } else {
+                        player.dy = 0;
+                        player.y = canvas.height - player.height;
+                    }
+        
+                    // Jump
+                    if (keys.ArrowUp && player.y === canvas.height - player.height) {
+                        player.dy = -7;
+                    }
+        
+                    // Move player vertically
+                    player.y += player.dy;
+        
+                    // Move player horizontally
+                    player.x += player.dx;
+        
+                    // Prevent player from going out of bounds
+                    if (player.x < 0) {
+                        player.x = 0;
+                    } else if (player.x + player.width > canvas.width) {
+                        player.x = canvas.width - player.width;
+                    }
+        
+                    // Check for collision with platforms
+                    platforms.forEach(platform => {
+                        if (isColliding(player, platform)) {
+                            player.dy = 0;
+                            player.y = platform.y - player.height;
+                        }
+                    });
+        
+                    // Move snakes
+                    snakes.forEach(snake => {
+                        snake.x -= snake.speed;
+                        if (snake.x + snake.width < 0) {
+                            snake.x = canvas.width + Math.random() * 200;
+                            snake.y = canvas.height - Math.random() * 200;
+                        }
+                        if (isColliding(player, snake)) {
+                            lives--;
+                            if (lives === 0) {
+                                gameOver = true;
+                                alert("Game Over! Your final score: " + score);
+                            } else {
+                                player.x = 50;
+                                player.y = canvas.height - 150;
+                            }
+                        }
+                    });
+        
+                    // Update score
+                    score++;
+                }
+        
+                // Draw everything
+                function draw() {
+                    // Clear the canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+                    // Draw platforms
+                    ctx.fillStyle = 'rgb(139, 69, 19)';
+                    platforms.forEach(platform => {
+                        ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                    });
+        
+                    // Draw player
+                    ctx.fillStyle = player.color;
+                    ctx.fillRect(player.x, player.y, player.width, player.height);
+
+                    // Draw snakes
+                    ctx.fillStyle = '#ff69b4';
+                    snakes.forEach(snake => {
+                        ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
+                    });
+                }
+
+                // Collision detection function
+                function isColliding(rect1, rect2) {
+                    return rect1.x < rect2.x + rect2.width &&
+                           rect1.x + rect1.width > rect2.x &&
+                           rect1.y < rect2.y + rect2.height &&
+                           rect1.y + rect1.height > rect2.y;
+                }
+
+                // Game loop
+                function gameLoop() {
+                    update();
+                    draw();
+                    requestAnimationFrame(gameLoop);
+                }
+
+                // Start the game loop when the page loads
+                document.addEventListener("DOMContentLoaded", function () {
+                    gameLoop();
+                });
+            </script>
+        </body>
+        </html>
+    
+</body>
+</html>
+             

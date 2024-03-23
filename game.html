@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+<style>
+ header {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better readability */
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+  }
+
+  nav ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  nav ul li {
+    display: inline;
+    margin-right: 20px;
+  }
+
+  nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease;
+  }
+
+  nav ul li a:hover {
+    color: #ffd700; /* Change the color on hover */
+  }
+
+  .banner {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better readability */
+    padding: 10px 20px;
+    text-align: center;
+  }
+
+  .banner a {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 18px;
+    transition: color 0.3s ease;
+  }
+
+  .banner a:hover {
+    color: #ffd700; /* Change the color on hover */
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
+  }
+  /* CSS styles for the background image */
+  body {
+    background-image: url('AI Generate Website - AI generated background.png'); /* Replace 'AI Generate Website - AI generated background.png' with the path to your background image */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>About Me</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="game.html">Game</a></li>
+        <li><a href="contactme.html">Contact Me</a></li> <!-- Added link to the gallery page -->
+      </ul>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="content">
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Invaders</title>
+  <style>
+    canvas {
+      border: 1px solid #000;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="480" height="320"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Player
+    const player = {
+      x: canvas.width / 2,
+      y: canvas.height - 30,
+      width: 50,
+      height: 10,
+      color: '#0095DD',
+      speed: 5
+    };
+
+    // Bullets
+    let bullets = [];
+
+    // Enemy
+    const enemy = {
+      x: 50,
+      y: 30,
+      width: 30,
+      height: 30,
+      color: '#FF0000',
+      speed: 2,
+      health: 3 // Number of hits required to destroy the enemy
+    };
+
+    // Keyboard controls
+    const keys = {};
+    window.addEventListener('keydown', e => keys[e.key] = true);
+    window.addEventListener('keyup', e => keys[e.key] = false);
+
+    // Draw player
+    function drawPlayer() {
+      ctx.beginPath();
+      ctx.rect(player.x, player.y, player.width, player.height);
+      ctx.fillStyle = player.color;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    // Draw enemy
+    function drawEnemy() {
+      ctx.beginPath();
+      ctx.rect(enemy.x, enemy.y, enemy.width, enemy.height);
+      ctx.fillStyle = enemy.color;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    // Draw bullets
+    function drawBullets() {
+      bullets.forEach(bullet => {
+        ctx.beginPath();
+        ctx.rect(bullet.x, bullet.y, 5, 10);
+        ctx.fillStyle = '#000';
+        ctx.fill();
+        ctx.closePath();
+      });
+    }
+
+    // Update player position
+    function movePlayer() {
+      if (keys['ArrowLeft'] && player.x > 0) {
+        player.x -= player.speed;
+      }
+      if (keys['ArrowRight'] && player.x < canvas.width - player.width) {
+        player.x += player.speed;
+      }
+      if (keys[' '] && bullets.length < 3) { // Spacebar for shooting
+        bullets.push({
+          x: player.x + player.width / 2 - 2.5,
+          y: player.y,
+          speed: 6
+        });
+      }
+    }
+
+    // Update enemy position
+    function moveEnemy() {
+      if (enemy.x + enemy.width > canvas.width || enemy.x < 0) {
+        enemy.speed *= -1; // Reverse direction if hits the wall
+      }
+      enemy.x += enemy.speed;
+    }
+
+    // Collision detection
+    function collisionDetection() {
+      bullets.forEach((bullet, bulletIndex) => {
+        if (
+          bullet.x < enemy.x + enemy.width &&
+          bullet.x + 5 > enemy.x &&
+          bullet.y < enemy.y + enemy.height &&
+          bullet.y + 10 > enemy.y
+        ) {
+          bullets.splice(bulletIndex, 1); // Remove the bullet
+          enemy.health--; // Decrease enemy health
+          if (enemy.health <= 0) {
+            alert('You win!');
+            document.location.reload();
+          }
+        }
+      });
+    }
+
+    // Update bullet positions
+    function moveBullets() {
+      bullets.forEach((bullet, bulletIndex) => {
+        bullet.y -= bullet.speed;
+        if (bullet.y < 0) {
+          bullets.splice(bulletIndex, 1); // Remove bullet if it goes out of bounds
+        }
+      });
+    }
+
+    // Main game loop
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      movePlayer();
+      moveEnemy();
+      moveBullets();
+      collisionDetection();
+
+      drawPlayer();
+      drawEnemy();
+      drawBullets();
+
+      requestAnimationFrame(draw);
+    }
+
+    draw(); // Start the game loop
+  </script>
+</body>
+</html>
+<footer>
+  <p>&copy; 2024 Snazzy  [AI Generated] Webpage. All rights reserved.</p>
+</footer>
+</body>
+</html>
